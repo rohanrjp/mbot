@@ -4,7 +4,7 @@ from fastapi import Request, HTTPException, status
 import jwt
 import time
 from api.core.config import Config
-import re
+import base64
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -59,8 +59,14 @@ async def get_raw_diff_changes(incoming_request: Request):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error connecting to GitHub")
 
 async def generate_github_jwt():
-    app_id = Config.GITHUB_APP_ID  
-    private_key = Config.GITHUB_PRIVATE_KEY  
+    
+    app_id = Config.GITHUB_APP_ID
+    raw_private_key=Config.GITHUB_PRIVATE_KEY
+    print(raw_private_key)
+    private_key_bytes = base64.b64decode(raw_private_key)
+
+    private_key = private_key_bytes.decode("utf-8", errors="replace")
+    print(private_key)
     
     payload = {
         "iat": int(time.time()),  
@@ -72,7 +78,7 @@ async def generate_github_jwt():
     return encoded_jwt
 
 async def get_installation_access_token(installation_id):
-    """Generates an installation access token for the given installation ID."""
+    
     jwt_token = await generate_github_jwt()
 
     headers = {
@@ -91,7 +97,7 @@ async def get_installation_access_token(installation_id):
             raise HTTPException(status_code=401, detail="Failed to get installation token")
 
 async def get_installation_id(repo_owner, repo_name):
-    """Fetches the installation ID for a given repository."""
+   
     jwt_token = await generate_github_jwt()  
 
     headers = {
@@ -126,70 +132,8 @@ async def get_installation_id(repo_owner, repo_name):
                     return install_id
 
         raise HTTPException(status_code=404, detail=f"Installation ID not found for {repo_owner}/{repo_name}")
-
-def find_position_from_patch(patch, line_number):
-    """Finds the position of a line in the PR diff patch."""
-    position = 0  
-    hunk_lines = patch.split("\n")
-    
-    for line in hunk_lines:
-        if line.startswith("@@"):
-            match = re.search(r"\+(\d+)", line)
-            if match:
-                current_line = int(match.group(1))  
-                position = 0  
-        elif line.startswith("+"):
-            position += 1  
-            if current_line == line_number:
-                return position
-
-        current_line += 1  
-
-    return None  
-
-async def get_position_in_diff(repo_owner, repo_name, pr_number, file_path, line_number, token):
-    """Finds the correct position in the PR diff for a given file and line number."""
-    
-    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/files"
-    headers = {"Authorization": f"Bearer {token}"}
-
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, headers=headers)
-        
-        if response.status_code != 200:
-            logger.error(f"Failed to fetch PR diff: {response.text}")
-            return None
-
-        files = response.json()
-        for file in files:
-            if file["filename"] == file_path:
-                patch = file.get("patch", "")
-                position = find_position_from_patch(patch, line_number)
-                return position
-
-    return None
-   
-def format_pr_comments(code_review_changes, commit_sha):
-    """Formats code review changes into GitHub PR review comments."""
-    
-    formatted_comments = []
-    
-    for issue in code_review_changes.get("issues", []):
-        comment_payload = {
-            "body": issue["suggestion"], 
-            "commit_id": commit_sha,
-            "path": issue["file"],  
-            "start_line": max(1, issue["line"] - 1),  
-            "start_side": "RIGHT",
-            "line": issue["line"],  
-            "side": "RIGHT"
-        }
-        formatted_comments.append(comment_payload)
-    
-    return formatted_comments 
        
 async def generate_pr_code_review_messages(code_review_changes, repo_owner, repo_name, pr_number, commit_sha):
-    """Posts code review comments to a GitHub PR using an installation access token."""
     
     installation_id = await get_installation_id(repo_owner, repo_name)
 
@@ -213,8 +157,8 @@ async def generate_pr_code_review_messages(code_review_changes, repo_owner, repo
                 "body": issue["suggestion"], 
                 "commit_id": commit_sha,
                 "path": file_path,
-                "line": line_number,
-                "start_line":line_number-1,
+                "line": line_number+2,
+                "start_line":line_number+1,
                 "start_side":"RIGHT",
                 "side":"RIGHT"
             }
