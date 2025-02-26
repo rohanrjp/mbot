@@ -50,7 +50,7 @@ async def generate_code_review_changes(diff_file_contents):
     """
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash-8b",
+        model="gemini-1.5-pro",
         contents=prompt,
         config=types.GenerateContentConfig(
             system_instruction="You are a strict and helpful AI code reviewer. Always return correct line numbers and file names.",

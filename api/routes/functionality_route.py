@@ -1,5 +1,4 @@
 from fastapi import APIRouter,status,Request
-import httpx
 from api.services.functionality_services import get_raw_diff_changes,generate_pr_code_review_messages
 from api.services.ai_services import generate_code_review_changes
 
