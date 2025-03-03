@@ -1,5 +1,5 @@
 [project]
-name = "mbot"
+name = "mariabot"
 version = "0.1.0"
 description = "mbot is an AI-powered GitHub PR reviewer built with FastAPI."
 readme = "README.md"
