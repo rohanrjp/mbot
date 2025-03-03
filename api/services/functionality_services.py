@@ -62,7 +62,6 @@ async def generate_github_jwt():
     
     app_id = Config.GITHUB_APP_ID
     raw_private_key=Config.GITHUB_PRIVATE_KEY
-    print(raw_private_key)
     private_key_bytes = base64.b64decode(raw_private_key)
 
     private_key = private_key_bytes.decode("utf-8", errors="replace")
