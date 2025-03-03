@@ -27,6 +27,12 @@ Run Locally with Docker
 docker build -t mbot .
 docker run -p 8080:8080 mbot
 ```
+You can pull the latest Docker image from Docker Hub and run it using the following commands:
+
+```bash
+docker pull rjp1007/mbot
+docker run -p 8080:8080 rjp1007/mbot:latest
+```
 
 ## Environment Variables
 
@@ -42,13 +48,13 @@ To run this project, you will need to add the following environment variables to
 
 #### Root endpoint
 
-```http
+```bash
   GET /
 ```
 
 #### Get Github webhook requests and post PR code review comments
 
-```http
+```bash
   POST /api/pr_review
 ```
 
@@ -83,8 +89,10 @@ Each challenge strengthened my understanding of cloud-based API deployment, cont
 
 ## Screenshots
 
-![Screenshots](https://imgur.com/H357tWL)
-![Screenshots](https://imgur.com/E3GYteA)
+## Screenshots
+
+![Screenshot 1](https://i.imgur.com/H357tWL.png)
+![Screenshot 2](https://i.imgur.com/E3GYteA.png)
 
 
 ## Roadmap
