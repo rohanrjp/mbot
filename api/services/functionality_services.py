@@ -65,7 +65,6 @@ async def generate_github_jwt():
     private_key_bytes = base64.b64decode(raw_private_key)
 
     private_key = private_key_bytes.decode("utf-8", errors="replace")
-    print(private_key)
     
     payload = {
         "iat": int(time.time()),  
@@ -92,7 +91,7 @@ async def get_installation_access_token(installation_id):
         if response.status_code == 201:
             return response.json()["token"]
         else:
-            print(f"Failed to get installation token: {response.status_code}, {response.text}")
+            logger.error(f"Failed to get installation token: {response.status_code}, {response.text}")
             raise HTTPException(status_code=401, detail="Failed to get installation token")
 
 async def get_installation_id(repo_owner, repo_name):
@@ -108,7 +107,7 @@ async def get_installation_id(repo_owner, repo_name):
         response = await client.get("https://api.github.com/app/installations", headers=headers)
 
         if response.status_code != 200:
-            print(f"Failed to get installations: {response.status_code}, {response.text}")
+            logger.error(f"Failed to get installations: {response.status_code}, {response.text}")
             raise HTTPException(status_code=401, detail="Unauthorized: Invalid GitHub App JWT")
 
         installations = response.json()
