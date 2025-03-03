@@ -1,7 +1,7 @@
 
-# Mbot – A GitHub PR Code Reviewer
+# mbot – A GitHub PR Code Reviewer
 
-Mbot is an AI-powered GitHub PR reviewer built with FastAPI. It leverages Gemini 1.5 Pro to analyze pull requests and provide smart suggestions for code improvements.
+mbot is an AI-powered GitHub PR reviewer built with FastAPI. It leverages Gemini 1.5 Pro to analyze pull requests and provide smart suggestions for code improvements.
 
 
 ## Features
