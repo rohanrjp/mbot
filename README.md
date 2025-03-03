@@ -86,9 +86,6 @@ Automating Docker image builds and deployments with **GitHub Actions** had some 
 
 Each challenge strengthened my understanding of cloud-based API deployment, containerized applications, and CI/CD automation. 
 
-
-## Screenshots
-
 ## Screenshots
 
 ![Screenshot 1](https://i.imgur.com/H357tWL.png)
